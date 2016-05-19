@@ -9,11 +9,14 @@ DBA scripts for MongoDB
 ## Usage
 
 Show fragmentation:
-	python fragmentation.py --host <your host> -s
+	```python fragmentation.py --host <your host> -s
     	Total fragmentation = 337.1GiB
-
+    ```
+    ```
 	python fragmentation.py --host <your host> -d thedatabase
 		thedatabase =  78.0MiB
-
+	```
 Compact:
+	```
 	python fragmentation.py --host <your host> -d thedatabase -A compact
+	```
