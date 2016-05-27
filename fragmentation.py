@@ -3,7 +3,7 @@
 
 from __future__ import print_function
 import sys
-import optparse
+import argparse
 
 try:
     import pymongo
@@ -19,18 +19,18 @@ else:
     import pymongo.son as son
 
 def main(argv):
-    p = optparse.OptionParser(conflict_handler="resolve", description="Check and repair MongoDB fragmentation.")
+    p = argparse.ArgumentParser(description="Check and repair MongoDB fragmentation.")
 
-    p.add_option('-H', '--host', action='store', type='string', dest='host', default='127.0.0.1', help='The hostname you want to connect to')
-    p.add_option('-P', '--port', action='store', type='int', dest='port', default=27017, help='The port MongoDB is running on')
-    p.add_option('-u', '--user', action='store', type='string', dest='user', default=None, help='The username you want to login as')
-    p.add_option('-p', '--pass', action='store', type='string', dest='passwd', default=None, help='The password you want to use for that user')
-    p.add_option('-d', '--database', action='store', dest='database', default=None, help='Specify the database to check')
-    p.add_option('-s', '--summarize', action='store_true', dest='summarize', help='Summarize all fragmentation')
-    p.add_option('-r', '--replicaset', dest='replicaset', default=None, help='Connect to replicaset')
-    p.add_option('-A', '--action', dest='action', default='show', help='You can choice: show or compact.')
+    p.add_argument('-H', '--host', action='store', dest='host', default='127.0.0.1', help='The hostname you want to connect to')
+    p.add_argument('-P', '--port', action='store', type=int, dest='port', default=27017, help='The port MongoDB is running on')
+    p.add_argument('-u', '--user', action='store', dest='user', default=None, help='The username you want to login as')
+    p.add_argument('-p', '--pass', action='store', dest='passwd', default=None, help='The password you want to use for that user')
+    p.add_argument('-d', '--database', action='store', dest='database', default=None, help='Specify the database to check')
+    p.add_argument('-s', '--summarize', action='store_true', dest='summarize', help='Summarize all fragmentation')
+    p.add_argument('-r', '--replicaset', dest='replicaset', default=None, help='Connect to replicaset')
+    p.add_argument('-A', '--action', dest='action', default='show', help='You can choice: show or compact.')
 
-    options, arguments = p.parse_args()
+    options = p.parse_args()
 
     host = options.host
     port = options.port
@@ -43,7 +43,7 @@ def main(argv):
 
     err, con = mongo_connect(host, port, user, passwd, replicaset)
 
-    if err != 0:
+    if err:
         return err
 
     if summarize:
@@ -116,9 +116,9 @@ def mongo_connect(host=None, port=None, user=None, passwd=None, replica=None):
                 con = pymongo.MongoClient(host, port, read_preference=pymongo.ReadPreference.SECONDARY, replicaSet=replica)
         else:
             if replica is None:
-                con = pymongo.Connection(host, port, slave_okay=True, network_timeout=10)
+                con = pymongo.Connection(host, port, slave_okay=True, network_timeout=3)
             else:
-                con = pymongo.Connection(host, port, slave_okay=True, replicaSet=replica, network_timeout=10)
+                con = pymongo.Connection(host, port, slave_okay=True, replicaSet=replica, network_timeout=3)
 
         if user and passwd:
             db = con["admin"]
