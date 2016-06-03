@@ -86,10 +86,14 @@ def empty_collections(con, database, drop=False):
         # Emtpy collection?
         if not c.endswith('.'):
             if con[database][c].count() == 0:
-                if drop:
-                    print ('Drop "%s" collection' % c)
-                    con[database][c].drop()
-                ncol += 1
+                # Indexs?
+                indexs = con[database][c].index_information()
+                # Ensure it have not indexes
+                if len(indexs) <= 1:
+                    if drop:
+                        print ('Drop "%s" collection' % c)
+                        con[database][c].drop()
+                    ncol += 1
 
     newlen = get_db_collections(con, database)
     if len(newlen) == 0 and drop:
