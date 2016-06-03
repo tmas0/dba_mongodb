@@ -63,7 +63,7 @@ def main(argv):
     else:
         # Get all databases
         databases = get_info_dbs(con)
-        if len(databases) > 0:
+        if len(databases) > 0 and not drop:
             print ('database = empty collections / total database collections')
 
         for db in databases:
