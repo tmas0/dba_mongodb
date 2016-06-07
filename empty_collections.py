@@ -155,10 +155,12 @@ def get_info_dbs(con):
     except Exception, e:
         return exit_with_general_critical(e)
 
+    nondb = ['system', 'test', 'admin']
     # Drop a system database.
     if data:
-        if 'system' in data:
-            data.remove('system')
+        for db in nondb:
+            if db in data:
+                data.remove(db)
 
     return data
 
